@@ -1,33 +1,37 @@
 # Web Monetization Receiver
 > Server-side library for advanced Web Monetization integrations
 
-## SPSP Receiver
+## Examples
 
-```
-const { SPSP } = require('web-monetization-receiver')
+### SPSP Receiver
+
+```js
+const { Monetizer } = require('web-monetization-receiver')
+const monetizer = new Monetizer()
 
 router.get('/.well-known/pay', ctx => {
   if (ctx.get('Accept').indexOf('appplication/spsp4+json'') >= 0) {
-    ctx.body = await SPSP.generateAddressAndSecret()
+    ctx.body = await monetizer.generateAddressAndSecret()
   }
 })
 ```
 
-## User-associated Buckets
+### User-associated Buckets
 
-```
-const { Buckets } = require('web-monetization-receiver')
+```js
+const { Monetizer } = require('web-monetization-receiver')
+const monetizer = new Monetizer()
 
 router.get('/.well-known/pay', ctx => {
   if (ctx.get('Accept').indexOf('appplication/spsp4+json'') >= 0) {
-    ctx.body = await Buckets.generateAddressAndSecret(ctx.query.userId)
+    ctx.body = await monetizer.generateAddressAndSecret(ctx.query.userId)
   }
 })
 
 const cost = 1000
 
 router.get('/images/:id', ctx => {
-  const bucket = Buckets.get(ctx.query.userId)
+  const bucket = monetizer.getBucket(ctx.query.userId)
 
   // wait for the user to accumulate enough money
   await bucket.awaitBalance(cost)
