@@ -10,7 +10,7 @@ const { Monetizer } = require('web-monetization-receiver')
 const monetizer = new Monetizer()
 
 router.get('/.well-known/pay', ctx => {
-  if (ctx.get('Accept').indexOf('appplication/spsp4+json'') >= 0) {
+  if (ctx.get('Accept').indexOf('appplication/spsp4+json') >= 0) {
     ctx.body = await monetizer.generateAddressAndSecret()
   }
 })
@@ -23,7 +23,7 @@ const { Monetizer } = require('web-monetization-receiver')
 const monetizer = new Monetizer()
 
 router.get('/.well-known/pay', ctx => {
-  if (ctx.get('Accept').indexOf('appplication/spsp4+json'') >= 0) {
+  if (ctx.get('Accept').indexOf('appplication/spsp4+json') >= 0) {
     ctx.body = await monetizer.generateAddressAndSecret(ctx.query.userId)
   }
 })
