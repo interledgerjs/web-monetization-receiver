@@ -7,5 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "ilp-plugin": "^3.2.1",
+    "ilp-protocol-stream": "^1.8.1"
+  }
 }
