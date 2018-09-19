@@ -14,10 +14,11 @@ class Monetizer {
   constructor (opts = {}) {
     this.plugin = opts.plugin || makePlugin()
 
+    this.buckets = new Map()
     this.bucketOpts = opts.buckets || {}
     this.bucketTimers = new Map()
-    this.bucketTimeout = opts.buckets.timeout || 60 * 1000
-    this.buckets = new Map()
+    this.bucketTimeout = (opts.buckets && opts.buckets.timeout) ||
+      60 * 1000
 
     this.events = new EventEmitter()
     this.initState = InitStates.NOT_CONNECTED
@@ -56,6 +57,8 @@ class Monetizer {
   }
 
   async generateSPSPResponse (tag) {
+    await this.listen()
+
     if (tag && !this.buckets.has(tag)) {
       this.buckets.set(tag, new Bucket(this.bucketOpts))
     }

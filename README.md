@@ -10,7 +10,7 @@ const { Monetizer } = require('web-monetization-receiver')
 const monetizer = new Monetizer()
 
 router.get('/.well-known/pay', ctx => {
-  if (ctx.get('Accept').indexOf('appplication/spsp4+json') >= 0) {
+  if (ctx.get('accept').indexOf('application/spsp4+json') >= 0) {
     ctx.body = await monetizer.generateAddressAndSecret()
   }
 })
@@ -23,15 +23,17 @@ const { Monetizer } = require('web-monetization-receiver')
 const monetizer = new Monetizer()
 
 router.get('/.well-known/pay', ctx => {
-  if (ctx.get('Accept').indexOf('appplication/spsp4+json') >= 0) {
-    ctx.body = await monetizer.generateAddressAndSecret(ctx.query.userId)
+  if (ctx.get('accept').indexOf('application/spsp4+json') >= 0) {
+    const tag = ctx.query.webMonetizationPaidResourceUser
+    ctx.body = await monetizer.generateAddressAndSecret(tag)
   }
 })
 
 const cost = 1000
 
 router.get('/images/:id', ctx => {
-  const bucket = monetizer.getBucket(ctx.query.userId)
+  const tag = ctx.query.webMonetizationPaidResourceUser
+  const bucket = monetizer.getBucket(tag)
 
   // wait for the user to accumulate enough money
   await bucket.awaitBalance(cost)
