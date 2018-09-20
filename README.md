@@ -24,7 +24,7 @@ const monetizer = new Monetizer()
 
 router.get('/.well-known/pay', ctx => {
   if (ctx.get('accept').indexOf('application/spsp4+json') >= 0) {
-    const tag = ctx.query.webMonetizationPaidResourceUser
+    const tag = ctx.cookies.get('webMonetization')
     ctx.body = await monetizer.generateAddressAndSecret(tag)
   }
 })
@@ -32,7 +32,7 @@ router.get('/.well-known/pay', ctx => {
 const cost = 1000
 
 router.get('/images/:id', ctx => {
-  const tag = ctx.query.webMonetizationPaidResourceUser
+  const tag = ctx.cookies.get('webMonetization')
   const bucket = monetizer.getBucket(tag)
 
   // wait for the user to accumulate enough money

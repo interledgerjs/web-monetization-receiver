@@ -1,25 +1,17 @@
 <html>
   <head>
     <script src='https://polyfill.webmonetization.org/polyfill.js'></script>
-    <script src='/paid-resources.js'></script>
+    <script src='/donate.js'></script>
     <script>
-window.addEventListener('load', async () => {
-  window.WebMonetizationScripts.initPaidResources({
-    paymentPointer: window.location.origin + '/.well-known/pay'
-  })
-    .then(({ paidResources }) => {
-      const image = document.createElement('img')
-      image.src = paidResources(window.location.origin + '/images/example.png')
-      image.width = '200'
-      image.alt = 'Photo by Max Di Capua on Unsplash'
-      document.getElementById('container').appendChild(image)
-    })
+window.WebMonetizationScripts.donate({
+  paymentPointer: window.location.origin + '/.well-known/pay'
 })
     </script>
   </head>
   <body>
     <h1>Hello World</h1>
     <div id='container'>
+      <img width='200' alt='Photo by Max Di Capua on Unsplash' src='/images/example.png' />
     </div>
   </body>
 </html>

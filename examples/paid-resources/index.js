@@ -1,6 +1,7 @@
 const Koa = require('koa')
 const app = new Koa()
 const router = require('koa-router')()
+const crypto = require('crypto')
 const serve = require('koa-static')
 const path = require('path')
 const fs = require('fs')
@@ -11,7 +12,7 @@ const monetizer = new Monetizer()
 
 router.get('/.well-known/pay', async ctx => {
   if (ctx.get('accept').indexOf('application/spsp4+json') >= 0) {
-    const tag = ctx.query.webMonetizationPaidResourceUser
+    const tag = ctx.cookies.get('webMonetization')
     ctx.body = await monetizer.generateSPSPResponse(tag)
   }
 })
@@ -19,7 +20,7 @@ router.get('/.well-known/pay', async ctx => {
 const cost = 300
 
 router.get('/images/:id', async ctx => {
-  const tag = ctx.query.webMonetizationPaidResourceUser
+  const tag = ctx.cookies.get('webMonetization')
   const bucket = monetizer.getBucket(tag)
 
   // wait for the user to accumulate enough money
@@ -37,6 +38,7 @@ router.get('/images/:id', async ctx => {
 })
 
 app
+  .use(monetizer.koa())
   .use(router.routes())
   .use(router.allowedMethods())
   .use(serve(path.resolve(__dirname, './static')))

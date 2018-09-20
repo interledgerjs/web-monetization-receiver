@@ -84,7 +84,7 @@ class Monetizer {
       clearTimeout(this.bucketTimers.get(tag))
     }
 
-    const timer = setTimeout(() => removeBucket(tag),
+    const timer = setTimeout(() => this.removeBucket(tag),
       this.bucketTimeout)
     this.bucketTimers.set(tag, timer)
   }
@@ -92,6 +92,15 @@ class Monetizer {
   getBucket (tag) {
     this.touchBucket(tag)
     return this.buckets.get(tag)
+  }
+
+  koa () {
+    return (ctx, next) => {
+      if (!ctx.cookies.get('webMonetization')) {
+        ctx.cookies.set('webMonetization', crypto.randomBytes(16).toString('hex'))
+      }
+      return next()
+    }
   }
 }
 
