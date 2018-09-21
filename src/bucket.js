@@ -41,7 +41,7 @@ class Bucket {
   awaitBalance (balance) {
     const b = Number(balance)
     if (isNaN(b)) {
-      throw new Error('invalid balance. balance=' + amount)
+      throw new Error('invalid balance. balance=' + balance)
     }
 
     return new Promise(resolve => {
@@ -59,7 +59,7 @@ class Bucket {
 
   async awaitAndSpend (amount) {
     while (true) {
-      await this.awaitBalance(amount)    
+      await this.awaitBalance(amount)
       if (this.spend(amount)) {
         return
       }
@@ -87,7 +87,7 @@ class Bucket {
               readStream.resume()
             })
             .catch(e => {
-              debug('failed to resume stream. error=' + e.stack)      
+              debug('failed to resume stream. error=' + e.stack)
             })
         }
 

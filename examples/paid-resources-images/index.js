@@ -1,7 +1,6 @@
 const Koa = require('koa')
 const app = new Koa()
 const router = require('koa-router')()
-const crypto = require('crypto')
 const serve = require('koa-static')
 const path = require('path')
 const fs = require('fs')
