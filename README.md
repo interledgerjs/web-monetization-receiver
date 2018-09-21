@@ -1,6 +1,23 @@
 # Web Monetization Receiver
 > Server-side library for advanced Web Monetization integrations
 
+- [Overview](#overview)
+- [Examples](#examples)
+- [API](#api)
+  - [`Monetizer`](#monetizer)
+  - [`Monetizer.koa`](#monetizerkoa)
+  - [`Monetizer.generateSPSPResponse`](#monetizergeneratespspresponse)
+  - [`Monetizer.listen`](#monetizerlisten)
+  - [`Monetizer.getBucket`](#monetizergetbucket)
+  - [`Bucket`](#bucket)
+  - [`Bucket.fund`](#bucketfund)
+  - [`Bucket.spend`](#bucketspend)
+  - [`Bucket.awaitBalance`](#bucketawaitbalance)
+  - [`Bucket.awaitAndSpend`](#bucketawaitandspend)
+  - [`Bucket.monetizeStream`](#bucketmonetizestream)
+
+## Overview
+
 Lots of sites can benefit from [Web Monetization](https://webmonetization.org).
 Most of the time, you can add a little bit of javascript that causes Web
 Monetization enabled users to donate to you ([The scripts are available
