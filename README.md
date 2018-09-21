@@ -31,6 +31,9 @@ This repository contains tools which aim to make these advanced integrations eas
 
 ## Examples
 
+Run `npm install` in this repository's root, then follow the README of the
+example you want to run.
+
 - [Serve Paid Images](https://github.com/sharafian/web-monetization-receiver/tree/master/examples/paid-resources-images)
 - [Serve Paid Video](https://github.com/sharafian/web-monetization-receiver/tree/master/examples/paid-resources-video)
 
