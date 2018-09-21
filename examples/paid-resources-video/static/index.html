@@ -1,0 +1,20 @@
+<html>
+  <head>
+    <script src='https://polyfill.webmonetization.org/polyfill.js'></script>
+    <script src='https://cdn.coil.com/donate.js'></script>
+    <script>
+window.WebMonetizationScripts.donate({
+  paymentPointer: window.location.origin + '/.well-known/pay'
+})
+    </script>
+  </head>
+  <body>
+    <h1>Web Monetization Receiver</h1>
+    <h2>Paid Resources Video</h2>
+    <div id='container'>
+      <video width="640" controls>
+        <source src="/videos/example.webm" type="video/webm" />
+      </video>
+    </div>
+  </body>
+</html>

@@ -1,6 +1,7 @@
 const stream = require('stream')
 const debug = require('debug')('web-monetization-receiver:bucket')
 const EventEmitter = require('events')
+const DEFAULT_FREE_BYTES = 0
 const DEFAULT_COST_PER_BYTE = 1 / 5000
 
 class Bucket {
@@ -44,11 +45,15 @@ class Bucket {
     }
 
     return new Promise(resolve => {
-      this.events.on('fund', newBalance => {
+      const onFund = newBalance => {
         if (newBalance >= balance) {
+          setImmediate(() =>
+            this.events.removeListener('fund', onFund))
           resolve()
         }
-      })
+      }
+
+      this.events.on('fund', onFund)
     })
   }
 
@@ -62,13 +67,13 @@ class Bucket {
   }
 
   monetizeStream (readStream, {
-    freeBytes = 0,
+    freeBytes = DEFAULT_FREE_BYTES,
     costPerByte = DEFAULT_COST_PER_BYTE
   }) {
     const transform = new stream.Transform({
       writableObjectMode: true,
-      transform (chunk, encoding, cb) {
-        if (readStream.bytesRead < FREE_BYTES) {
+      transform: (chunk, encoding, cb) => {
+        if (readStream.bytesRead < freeBytes) {
           cb(null, chunk)
           return
         }
