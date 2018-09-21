@@ -1,4 +1,7 @@
+const stream = require('stream')
+const debug = require('debug')('web-monetization-receiver:bucket')
 const EventEmitter = require('events')
+const DEFAULT_COST_PER_BYTE = 1 / 5000
 
 class Bucket {
   constructor (opts = {}) {
@@ -56,6 +59,38 @@ class Bucket {
         return
       }
     }
+  }
+
+  monetizeStream (readStream, {
+    freeBytes = 0,
+    costPerByte = DEFAULT_COST_PER_BYTE
+  }) {
+    const transform = new stream.Transform({
+      writableObjectMode: true,
+      transform (chunk, encoding, cb) {
+        if (readStream.bytesRead < FREE_BYTES) {
+          cb(null, chunk)
+          return
+        }
+
+        const cost = chunk.length * costPerByte
+        if (!this.spend(cost)) {
+          readStream.pause()
+
+          this.awaitBalance(cost)
+            .then(() => {
+              readStream.resume()
+            })
+            .catch(e => {
+              debug('failed to resume stream. error=' + e.stack)      
+            })
+        }
+
+        cb(null, chunk)
+      }
+    })
+
+    return readStream.pipe(transform)
   }
 }
 
