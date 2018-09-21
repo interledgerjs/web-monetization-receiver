@@ -24,13 +24,31 @@ jobs:
 
       - checkout
 
+      - restore_cache:
+          keys: 
+            # when lock file changes, use increasingly general patterns to restore cache
+            - "node-v1-{{ .Branch }}-{{ checksum \"package-lock.json\" }}"
+            - "node-v1-{{ .Branch }}-"
+            - "node-v1-"
+
+      - run:
+          name: Install
+          command: npm install
+
+
       - run:
           name: Lint
           command: npm run lint
 
+      - save_cache:
+          paths:
+            - node_modules
+          key: node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
+
       - persist_to_workspace:
           root: ~/repo
           paths: .
+
   deploy:
     <<: *defaults
     steps:
