@@ -95,10 +95,19 @@ class Monetizer {
   }
 
   koa () {
-    return (ctx, next) => {
+    return async (ctx, next) => {
       if (!ctx.cookies.get('webMonetization')) {
         ctx.cookies.set('webMonetization', crypto.randomBytes(16).toString('hex'))
       }
+
+      const tag = ctx.cookies.get('webMonetization')
+      ctx.webMonetization = this.getBucket(tag)
+
+      if (ctx.get('accept').includes('application/spsp4+json')) {
+        ctx.body = await this.generateSPSPResponse(tag)
+        return
+      }
+
       return next()
     }
   }

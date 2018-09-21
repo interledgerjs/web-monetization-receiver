@@ -10,31 +10,15 @@ const fs = require('fs')
 const { Monetizer } = require('../..')
 const monetizer = new Monetizer()
 
-router.get('/.well-known/pay', async ctx => {
-  if (ctx.get('accept').indexOf('application/spsp4+json') >= 0) {
-    const tag = ctx.cookies.get('webMonetization')
-    ctx.body = await monetizer.generateSPSPResponse(tag)
-  }
-})
-
 const cost = 300
 
 router.get('/images/:id', async ctx => {
-  const tag = ctx.cookies.get('webMonetization')
-  const bucket = monetizer.getBucket(tag)
-
-  // wait for the user to accumulate enough money
-  await bucket.awaitBalance(cost)
-
-  if (bucket.spend(cost)) {
-    ctx.body = fs.readFileSync(path.resolve(
-      __dirname,
-      'images',
-      ctx.params.id
-    ))
-  } else {
-    return ctx.throw(402, 'insufficient balance to download image')
-  }
+  await ctx.webMonetization.awaitAndSpend(cost)
+  ctx.body = fs.readFileSync(path.resolve(
+    __dirname,
+    'images',
+    ctx.params.id
+  ))
 })
 
 app
