@@ -8,7 +8,7 @@
     "lint": "eslint ."
   },
   "author": "",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "dependencies": {
     "ilp-plugin": "^3.2.1",
     "ilp-protocol-stream": "^1.8.1"
