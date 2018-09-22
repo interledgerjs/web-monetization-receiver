@@ -70,20 +70,22 @@ class Bucket {
     freeBytes = DEFAULT_FREE_BYTES,
     costPerByte = DEFAULT_COST_PER_BYTE
   } = {}) {
+    const bucket = this
     const transform = new stream.Transform({
       writableObjectMode: true,
-      transform: (chunk, encoding, cb) => {
+      transform: function (chunk, encoding, cb) {
         if (readStream.bytesRead < freeBytes) {
           cb(null, chunk)
           return
         }
 
-        const cost = chunk.length * costPerByte
-        if (!this.spend(cost)) {
+        const cost = Math.ceil(chunk.length * costPerByte)
+        if (!bucket.spend(cost)) {
           readStream.pause()
 
-          this.awaitBalance(cost)
+          bucket.awaitBalance(cost)
             .then(() => {
+              this.emit('money', cost)
               cb(null, chunk)
               readStream.resume()
             })
@@ -91,6 +93,7 @@ class Bucket {
               debug('failed to resume stream. error=' + e.stack)
             })
         } else {
+          this.emit('money', cost)
           cb(null, chunk)
         }
       }

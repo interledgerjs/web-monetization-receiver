@@ -304,4 +304,5 @@ being monetized.
 #### Return
 
 - `stream: ReadableStream` - Transformed stream which will charge for money as
-  it goes.
+  it goes. This stream also implements a special `money` event which fires
+  whenever payment is charged for data going through the stream.
