@@ -2,7 +2,7 @@ const IlpStream = require('ilp-protocol-stream')
 const makePlugin = require('ilp-plugin')
 const EventEmitter = require('events')
 const crypto = require('crypto')
-const Bucket = require('./src/bucket')
+const Bucket = require('./bucket')
 
 const InitStates = {
   NOT_CONNECTED: 0,
@@ -113,6 +113,4 @@ class Monetizer {
   }
 }
 
-module.exports = {
-  Monetizer
-}
+module.exports = Monetizer
