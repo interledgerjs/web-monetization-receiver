@@ -69,7 +69,7 @@ class Bucket {
   monetizeStream (readStream, {
     freeBytes = DEFAULT_FREE_BYTES,
     costPerByte = DEFAULT_COST_PER_BYTE
-  }) {
+  } = {}) {
     const transform = new stream.Transform({
       writableObjectMode: true,
       transform: (chunk, encoding, cb) => {
@@ -79,14 +79,11 @@ class Bucket {
         }
 
         const cost = chunk.length * costPerByte
-        console.log('spending. cost=' + cost, 'balance=' + this.balance)
         if (!this.spend(cost)) {
-          console.log('deferring')
           readStream.pause()
 
           this.awaitBalance(cost)
             .then(() => {
-              console.log('completing defer')
               cb(null, chunk)
               readStream.resume()
             })
@@ -94,7 +91,6 @@ class Bucket {
               debug('failed to resume stream. error=' + e.stack)
             })
         } else {
-          console.log('passing on paid packet')
           cb(null, chunk)
         }
       }
