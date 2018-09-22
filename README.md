@@ -292,7 +292,7 @@ To see an example of usage, refer to the [video example](#examples).
   Stream](https://nodejs.org/api/stream.html#stream_readable_streams) which is
 being monetized.
 
-- `opts: Object` - (Optional) Options to fine-tune the payment for this stream.
+- `opts: Object` - (Required) Options to fine-tune the payment for this stream.
 
 - `opts.freeBytes: Number` - (Optional) How many free bytes to send up front.
   Default `0`.
