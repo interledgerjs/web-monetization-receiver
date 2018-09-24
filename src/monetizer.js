@@ -105,6 +105,7 @@ class Monetizer {
 
       if (spsp && ctx.get('accept').includes('application/spsp4+json')) {
         ctx.body = await this.generateSPSPResponse(tag)
+        ctx.set('Content-Type', 'application/spsp4+json')
         return
       }
 
