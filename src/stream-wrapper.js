@@ -17,6 +17,8 @@ function pointerToUrl (pointer) {
 
 class StreamWrapper extends EventEmitter {
   constructor ({ pointer, streamOpts }) {
+    super()
+
     this.pointer = pointer
     this.state = StreamStates.NOT_CONNECTED
     this.connection = null
@@ -49,7 +51,8 @@ class StreamWrapper extends EventEmitter {
 
     this.state = StreamStates.CONNECTING
 
-    const res = await axios.get({
+    console.log('requesting pointer', this.pointer, pointerToUrl(this.pointer))
+    const res = await axios({
       method: 'GET',
       url: pointerToUrl(this.pointer),
       headers: {
@@ -57,10 +60,12 @@ class StreamWrapper extends EventEmitter {
       }
     })
 
+    console.log('got result', res)
+
     this.connection = await IlpStream.createConnection({
       plugin: makePlugin(),
-      destinationAccount: res.body.destination_account,
-      sharedSecret: Buffer.from(res.body.shared_secret, 'base64'),
+      destinationAccount: res.data.destination_account,
+      sharedSecret: Buffer.from(res.data.shared_secret, 'base64'),
       ...this.streamOpts
     })
 

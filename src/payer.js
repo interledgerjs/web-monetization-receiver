@@ -8,9 +8,18 @@ class Payer {
   }
 
   async createReceiver (pointer) {
-    const receiver = new StreamWrapper(pointer)
+    const receiver = new StreamWrapper({
+      streamOpts: this.streamOpts,
+      pointer
+    })
     this.receivers.set(pointer, receiver)
-    await receiver.connect()
+
+    try {
+      await receiver.connect()
+    } catch (e) {
+      this.receivers.delete(pointer)
+      throw e
+    }
 
     receiver.getStream().once('end', () => {
       this.receivers.delete(pointer)
