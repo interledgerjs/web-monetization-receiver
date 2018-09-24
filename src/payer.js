@@ -1,12 +1,35 @@
-const SPSP = require('ilp-protocol-spsp')
-const makePlugin = require('ilp-plugin')
+const StreamWrapper = require('./stream-wrapper')
 
 class Payer {
-  constructor (opts = {}) {
-
+  constructor ({ streamOpts = {} } = {}) {
+    this.receivers = new Map()
+    this.streamOpts = streamOpts
+    this.closed = false
   }
 
-  async pay (pointer) {
+  async createReceiver (pointer) {
+    const receiver = new StreamWrapper(pointer)
+    this.receivers.set(pointer, receiver)
+    await receiver.connect()
 
+    receiver.getStream().once('end', () => {
+      this.receivers.delete(pointer)
+    })
+  }
+
+  async getReceiver (pointer) {
+    return this.receivers.get(pointer) || this.createReceiver(pointer)
+  }
+
+  async pay (pointer, amount) {
+    if (this.closed) {
+      throw new Error('paying is closing so payments are stopped')
+    }
+
+    const receiver = await this.getReceiver(pointer)
+    const stream = receiver.getStream()
+    stream.setSendMax(Number(stream.sendMax) + Number(amount))
   }
 }
+
+module.exports = Payer
