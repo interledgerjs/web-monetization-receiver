@@ -93,7 +93,11 @@ reading the API.
 
 #### Parameters
 
-- None
+- `opts: Object` - (Optional) Additional options for the receiver
+
+- `opts.spsp: boolean` - (Optional) (Default `true`) Whether to respond to SPSP
+  requests. If this is set to false, you must write an SPSP receiver endpoint
+yourself using the `generateSPSPResponse` function.
 
 #### Return
 

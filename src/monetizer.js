@@ -94,7 +94,7 @@ class Monetizer {
     return this.buckets.get(tag)
   }
 
-  koa () {
+  koa ({ spsp = true } = {}) {
     return async (ctx, next) => {
       if (!ctx.cookies.get('webMonetization')) {
         ctx.cookies.set('webMonetization', crypto.randomBytes(16).toString('hex'))
@@ -103,7 +103,7 @@ class Monetizer {
       const tag = ctx.cookies.get('webMonetization')
       ctx.webMonetization = this.getBucket(tag)
 
-      if (ctx.get('accept').includes('application/spsp4+json')) {
+      if (spsp && ctx.get('accept').includes('application/spsp4+json')) {
         ctx.body = await this.generateSPSPResponse(tag)
         return
       }
