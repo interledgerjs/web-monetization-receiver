@@ -60,8 +60,6 @@ class StreamWrapper extends EventEmitter {
       }
     })
 
-    console.log('got result', res)
-
     this.connection = await IlpStream.createConnection({
       plugin: makePlugin(),
       destinationAccount: res.data.destination_account,
