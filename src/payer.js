@@ -24,6 +24,8 @@ class Payer {
     receiver.getStream().once('end', () => {
       this.receivers.delete(pointer)
     })
+
+    return receiver
   }
 
   async getReceiver (pointer) {
