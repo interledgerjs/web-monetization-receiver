@@ -15,6 +15,8 @@
   - [`Bucket.awaitBalance`](#bucketawaitbalance)
   - [`Bucket.awaitAndSpend`](#bucketawaitandspend)
   - [`Bucket.monetizeStream`](#bucketmonetizestream)
+  - [`Payer`](#payer)
+  - [`Payer.pay`](#payerpay)
 
 ## Overview
 
@@ -93,7 +95,11 @@ reading the API.
 
 #### Parameters
 
-- None
+- `opts: Object` - (Optional) Additional options for the receiver
+
+- `opts.spsp: boolean` - (Optional) (Default `true`) Whether to respond to SPSP
+  requests. If this is set to false, you must write an SPSP receiver endpoint
+yourself using the `generateSPSPResponse` function.
 
 #### Return
 
@@ -306,3 +312,53 @@ being monetized.
 - `stream: ReadableStream` - Transformed stream which will charge for money as
   it goes. This stream also implements a special `money` event which fires
   whenever payment is charged for data going through the stream.
+
+### `Payer`
+
+```js
+const payer = new Payer({
+  streamOpts: {
+    minExchangeRatePrecision: 2
+  }
+})
+```
+
+Creates a `Payer` object. A Payer can be used to efficiently pay out to many different
+SPSP receivers. It keeps connections to each of the receivers cached until they time out
+in order to minimize the amount of connection re-establishment.
+
+#### Parameters
+
+- `opts: Object` - (Optional) additional options for this payer
+- `opts.streamOpts: Object` - (Optional) additional override object for
+  `IlpStream.createConnection` calls. [You can read about the format
+here.](https://interledgerjs.github.io/ilp-protocol-stream/interfaces/_connection_.connectionopts.html)
+
+#### Return
+
+- `payer: Payer` - Payer object
+
+### `Payer.pay`
+
+```js
+await payer.pay('$twitter.xrptipbot.com/interledger', '100')
+```
+
+Sends some money to a payment pointer. If a STREAM connection to this payment
+pointer already exists then the money is sent over that connection. If no
+STREAM connection to this payment pointer exists, then one is created.
+
+If the STREAM connection does not exist and cannot be established then this
+function will reject.
+
+#### Parameters
+
+- `pointer: string` - Payment pointer to send funds to.
+
+- `amount: string` - Amount of units (denominated in the units of your
+  plugin/local moneyd) to send.
+
+#### Returns
+
+- Promise to void. Rejects if SPSP details cannot be loaded or the STREAM
+  connection fails.
