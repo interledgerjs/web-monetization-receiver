@@ -66,7 +66,7 @@ class Monetizer {
     const details = this.server.generateAddressAndSecret(tag)
     return {
       destination_account: details.destinationAccount,
-      shared_secret: details.sharedSecret
+      shared_secret: details.sharedSecret.toString('base64')
     }
   }
 
