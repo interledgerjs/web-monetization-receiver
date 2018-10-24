@@ -28,12 +28,12 @@ class Bucket {
     const now = Date.now()
     this.window.push({ amount: n, date: now })
     for (let i = 0; i < this.window.length; ++i) {
-      if (item.date + DEFAULT_WINDOW > now) {
+      if (this.window[i].date + DEFAULT_WINDOW > now) {
         this.window.splice(i, 1)
         --i
         continue
       }
-      total += item.amount
+      total += this.window[i].amount
     }
 
     this.pulse = total / (DEFAULT_THROUGHPUT * (DEFAULT_WINDOW / 1000))
