@@ -15,6 +15,7 @@ class Bucket {
 
     // sliding window of payment events
     this.window = []
+    this.lastPulse = 0
     this.pulse = 0
   }
 
@@ -36,6 +37,7 @@ class Bucket {
       total += this.window[i].amount
     }
 
+    this.lastPulse = this.pulse
     this.pulse = total / (DEFAULT_THROUGHPUT * (DEFAULT_WINDOW / 1000))
     this.balance = Math.min(
       this.balance + n,
