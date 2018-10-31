@@ -16,18 +16,12 @@ class Bucket {
     // sliding window of payment events
     this.window = []
     this.lastPulse = 0
-    this.pulse = 0
+    this._pulse = 0
   }
 
-  fund (amount) {
-    const n = Number(amount)
-    if (isNaN(n)) {
-      throw new Error('invalid amount. amount=' + amount)
-    }
-
+  _recalculatePulse () {
     let total = 0
     const now = Date.now()
-    this.window.push({ amount: n, date: now })
     for (let i = 0; i < this.window.length; ++i) {
       if (this.window[i].date + DEFAULT_WINDOW < now) {
         this.window.splice(i, 1)
@@ -36,17 +30,28 @@ class Bucket {
       }
       total += this.window[i].amount
     }
+    return total / (DEFAULT_THROUGHPUT * (DEFAULT_WINDOW / 1000))
+  }
 
-    this.lastPulse = this.pulse
-    this.pulse = total / (DEFAULT_THROUGHPUT * (DEFAULT_WINDOW / 1000))
+  fund (amount) {
+    const n = Number(amount)
+    if (isNaN(n)) {
+      throw new Error('invalid amount. amount=' + amount)
+    }
+
+    const now = Date.now()
+    this.window.push({ amount: n, date: now })
+
+    this.lastPulse = this._pulse
+    this._pulse = this._recalculatePulse()
     this.balance = Math.min(
       this.balance + n,
       this.capacity)
     this.events.emit('fund', this.balance)
   }
 
-  pulse () {
-    return this.pulse
+  get pulse () {
+    return this._recalculatePulse()
   }
 
   spend (amount) {
