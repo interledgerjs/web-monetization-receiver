@@ -1,6 +1,8 @@
 const stream = require('stream')
 const debug = require('debug')('web-monetization-receiver:bucket')
 const EventEmitter = require('events')
+const DEFAULT_THROUGHPUT = 100000
+const DEFAULT_WINDOW = 5000
 const DEFAULT_FREE_BYTES = 0
 const DEFAULT_COST_PER_BYTE = 1 / 5000
 
@@ -10,6 +12,25 @@ class Bucket {
     this.capacity = opts.capacity || Infinity
     this.balance = 0
     this.events = new EventEmitter()
+
+    // sliding window of payment events
+    this.window = []
+    this.lastPulse = 0
+    this._pulse = 0
+  }
+
+  _recalculatePulse () {
+    let total = 0
+    const now = Date.now()
+    for (let i = 0; i < this.window.length; ++i) {
+      if (this.window[i].date + DEFAULT_WINDOW < now) {
+        this.window.splice(i, 1)
+        --i
+        continue
+      }
+      total += this.window[i].amount
+    }
+    return total / (DEFAULT_THROUGHPUT * (DEFAULT_WINDOW / 1000))
   }
 
   fund (amount) {
@@ -18,10 +39,19 @@ class Bucket {
       throw new Error('invalid amount. amount=' + amount)
     }
 
+    const now = Date.now()
+    this.window.push({ amount: n, date: now })
+
+    this.lastPulse = this._pulse
+    this._pulse = this._recalculatePulse()
     this.balance = Math.min(
       this.balance + n,
       this.capacity)
     this.events.emit('fund', this.balance)
+  }
+
+  get pulse () {
+    return this._recalculatePulse()
   }
 
   spend (amount) {
