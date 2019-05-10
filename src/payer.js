@@ -12,18 +12,26 @@ class Payer {
       streamOpts: this.streamOpts,
       pointer
     })
-    this.receivers.set(pointer, receiver)
 
-    try {
-      await receiver.connect()
-    } catch (e) {
-      this.receivers.delete(pointer)
-      throw e
-    }
+    const ready = receiver.connect()
+      .then(() => receiver)
+      .catch((err) => {
+        this.receivers.delete(pointer)
+        throw err
+      })
+    this.receivers.set(pointer, ready)
+    await ready
 
-    receiver.getStream().once('end', () => {
-      this.receivers.delete(pointer)
-    })
+    receiver.getStream()
+      .once('end', () => {
+        this.receivers.delete(pointer)
+      })
+      .once('close', () => {
+        this.receivers.delete(pointer)
+      })
+      .once('error', () => {
+        this.receivers.delete(pointer)
+      })
 
     return receiver
   }
