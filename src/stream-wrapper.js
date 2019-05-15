@@ -67,6 +67,14 @@ class StreamWrapper extends EventEmitter {
       ...this.streamOpts
     })
 
+    this.connection
+      .once('close', () => {
+        this.state = StreamStates.NOT_CONNECTED
+      })
+      .once('error', (_err) => {
+        this.state = StreamStates.NOT_CONNECTED
+      })
+
     this.stream = this.connection.createStream()
     this.state = StreamStates.CONNECTED
     this.emit('connected')
